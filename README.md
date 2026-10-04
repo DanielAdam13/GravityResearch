@@ -14,12 +14,15 @@ Combining number 1, 3, 4 makes the Planar Circular Restricted Three-Body Problem
 ______________________________________________________________
 
 
-A look into Gravity Assists:
+A look into Gravity Assists
+
 ![Gravity Assist Voyager 1](DocImages/voyager1_trajectory.gif)
 ![Gravity Assist Voyager 2](DocImages/voyager2_trajectory.gif)
 
 What are Lagrange Points
+
 ![Lagrange Points](DocImages/Lagrange.png)
 
 The Three-Body-Problem
+
 ![Lagrange Points](DocImages/ThreeBody.webp)
