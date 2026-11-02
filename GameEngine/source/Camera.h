@@ -20,19 +20,33 @@ namespace ge
 
 		void SetBounds(const glm::vec2& min, const glm::vec2& max);
 
-		// The offset to add to a WORLD position to get the VIEW position
-		glm::vec2 GetRenderOffset() const noexcept;
+		// Anchor world is fixed on screen (under mouse)
+		void ZoomAt(float factor, const glm::vec2& anchorWorld);
+
+		void SetZoom(float zoom);
+		float GetZoom() const noexcept { return m_Zoom; }
+
+		// Helpers converting transforms from ZOOM.
+		// Used in Renderer
+		// --------------------
+		glm::vec2 WorldToView(const glm::vec2& world) const noexcept;
+		glm::vec2 ViewToWorld(const glm::vec2& view) const noexcept;
+		// --------------------
 
 	private:
 		glm::vec2 m_Position{ 0.f, 0.f };
 		glm::vec2 m_ViewportSize;
 		glm::vec2 m_ViewportCenter;
 
-		static inline constexpr float floatInfinity = std::numeric_limits<float>().infinity();
-
 		glm::vec2 m_BoundsMin{ -floatInfinity, -floatInfinity };
 		glm::vec2 m_BoundsMax{ floatInfinity, floatInfinity };
 		bool m_HasBounds{ false };
+
+		float m_Zoom{ 1.f };
+		static constexpr float MinZoom{ 0.01f };
+		static constexpr float MaxZoom{ 5000.f };
+
+		static constexpr float floatInfinity{ std::numeric_limits<float>().infinity() };
 
 		void ApplyBounds();
 	};

@@ -4,6 +4,7 @@
 
 #include <SDL3/SDL.h>
 #include <utility>
+#include <glm/glm.hpp>
 
 namespace ge
 {
@@ -44,6 +45,10 @@ namespace ge
 		void SuspendCamera();
 		void RestoreCamera();
 
+		glm::vec2 WorldToScreen(const glm::vec2& world) const;
+		glm::vec2 ScreenToWorld(const glm::vec2& screen) const;
+		float WorldLengthToScreen(float length) const;
+
 	private:
 		SDL_Renderer* m_Renderer{};
 		SDL_Window* m_Window{}; // Doesn't own
@@ -55,8 +60,13 @@ namespace ge
 	
 		Subject m_OnScreenResizeEvent;
 
-		Camera* m_ActiveCamera;
-		Camera* m_SuspendedCamera; // for the Suspend and Restore methods
+		Camera* m_ActiveCamera{};
+		Camera* m_SuspendedCamera{}; // for UI -> the Suspend and Restore methods called from a GO
+
+		// Reusable helper to Render Textures, DrawRegions, RectOutline...
+		// Input world pos and size
+		// Output screen pos and screen size -> both calculated by camera ZOOM and RENDER SCALE
+		SDL_FRect WorldRectToScreen(float x, float y, float w, float h) const;
 	};
 }
 

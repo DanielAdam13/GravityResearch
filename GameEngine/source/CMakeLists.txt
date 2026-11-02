@@ -34,7 +34,8 @@ add_library(gameEngine_lib STATIC
   "Components/ScoreComponent.h" "Components/ScoreComponent.cpp"
   "Components/Colliders.h" "Components/Colliders.cpp"
   "Components/AnimatorComponent.h" "Components/AnimatorComponent.cpp"
-  "Components/CameraFollowComponent.h" "Components/CameraFollowComponent.cpp" 
+  "Components/CameraFollowComponent.h" "Components/CameraFollowComponent.cpp"
+  "Components/CameraZoomComponent.h" "Components/CameraZoomComponent.cpp"
   "Components/TimerDisplayComponent.h" "Components/TimerDisplayComponent.cpp"
 
   "Commands/Command.h"
@@ -48,7 +49,7 @@ add_library(gameEngine_lib STATIC
   "EngineEvents.h" "IGameApplication.h"  
   
   "SpriteSheet.h" "SpriteSheet.cpp"
-  "Animation.h")
+  "Animation.h" )
 
 target_compile_features(gameEngine_lib PUBLIC cxx_std_20)
 

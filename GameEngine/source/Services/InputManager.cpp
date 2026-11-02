@@ -48,6 +48,8 @@
 			void UnbindAllCommandsOfTarget(GameObject* target);
 			void UnbindAllMouse();
 
+			float GetMouseWheelDelta() const noexcept { return m_MouseWheelDelta; }
+
 		private:
 			struct ControllerState
 			{
@@ -95,6 +97,8 @@
 			std::vector<ControllerBinding> m_ControllerBindings{};
 			std::vector<MouseBinding> m_MouseBindings{};
 
+			float m_MouseWheelDelta{};
+
 	#ifndef _WIN32
 			void MapButton(unsigned int controllerIndex, SDL_GamepadButton sdlButton, unsigned int bit);
 	#endif // !WIN32
@@ -138,6 +142,10 @@
 		int InputManager::GetControllerCount() const noexcept
 		{
 			return m_Impl->GetControllerCount();
+		}
+		float InputManager::GetMouseWheelDelta() const noexcept
+		{
+			return m_Impl->GetMouseWheelDelta();
 		}
 		void InputManager::BindKeyboardCommand(SDL_Scancode key, InputTrigger trigger, std::unique_ptr<Command> command)
 		{
@@ -247,6 +255,8 @@
 			}
 	#pragma endregion
 
+			m_MouseWheelDelta = 0.f; // Reset before while loop
+
 			SDL_Event e;
 			while (SDL_PollEvent(&e))
 			{
@@ -296,7 +306,11 @@
 						}
 					}
 				}
-				// etc...
+
+				if (e.type == SDL_EVENT_MOUSE_WHEEL)
+				{
+					m_MouseWheelDelta += e.wheel.y;
+				}
 	#pragma endregion
 
 				ImGui_ImplSDL3_ProcessEvent(&e);

@@ -17,7 +17,7 @@ namespace gravity
 		BaseModel()
 		{}
 
-		virtual State Rk4Step(const State& s, double h) const = 0;
+		virtual State Rk4Step(const State& /*s*/, double /*h*/) const { return {}; }
 
 	protected:
 
@@ -53,7 +53,8 @@ namespace gravity
 	{
 	public:
 		explicit Pcr3bp(double mu) // Secondary body’s share of the total mass: mu = m2 / (m1 + m2)
-			:BaseModel()
+			:BaseModel(),
+			m_Mu{ mu }
 		{}
 
 		virtual State Rk4Step(const State& s, double h) const override; // RK4

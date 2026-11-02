@@ -1,6 +1,13 @@
 #pragma once
 #include "IGameApplication.h"
+#include "Camera.h"
 
+#include <memory>
+
+namespace ge
+{
+    class Scene;
+}
 
 namespace customProject
 {
@@ -21,5 +28,8 @@ namespace customProject
 
     private:
         void BindInputCommands();
+
+        std::unique_ptr<ge::Camera> m_DefaultCamera; // Owned
+        void SetupDefaultCamera(ge::Scene& scene);
     };
 }

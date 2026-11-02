@@ -91,28 +91,17 @@ void Renderer::Destroy()
 
 void Renderer::RenderTexture(const Texture2D& texture, const float x, const float y) const
 {
-	SDL_FRect dst{};
 	float w{};
 	float h{};
 	SDL_GetTextureSize(texture.GetSDLTexture(), &w, &h);
 
-	const glm::vec2 offset{ m_ActiveCamera ? m_ActiveCamera->GetRenderOffset() : glm::vec2{ 0,0 } };
-	dst.x = (x + offset.x) * m_RenderScale.first;
-	dst.y = (y + offset.y) * m_RenderScale.second;
-	dst.w = w * m_RenderScale.first;
-	dst.h = h * m_RenderScale.second;
+	const SDL_FRect dst{ WorldRectToScreen(x, y, w, h) };
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
 void Renderer::RenderTexture(const Texture2D& texture, const float x, const float y, const float width, const float height) const
 {
-	SDL_FRect dst{};
-
-	const glm::vec2 offset{ m_ActiveCamera ? m_ActiveCamera->GetRenderOffset() : glm::vec2{ 0,0 } };
-	dst.x = (x + offset.x) * m_RenderScale.first;
-	dst.y = (y + offset.y) * m_RenderScale.second;
-	dst.w = width * m_RenderScale.first;
-	dst.h = height * m_RenderScale.second;
+	const SDL_FRect dst{ WorldRectToScreen(x, y, width, height) };
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
 }
 
@@ -120,25 +109,13 @@ void Renderer::RenderRectOutline(float x, float y, float w, float h, const SDL_C
 {
 	SDL_SetRenderDrawColor(m_Renderer, color.r, color.g, color.b, color.a);
 
-	const glm::vec2 offset{ m_ActiveCamera ? m_ActiveCamera->GetRenderOffset() : glm::vec2{ 0,0 } };
-	SDL_FRect r{
-		(x + offset.x) * m_RenderScale.first,
-		(y + offset.y) * m_RenderScale.second,
-		w * m_RenderScale.first,
-		h * m_RenderScale.second
-	};
+	const SDL_FRect r{ WorldRectToScreen(x, y, w, h) };
 	SDL_RenderRect(m_Renderer, &r);
 }
 
 void ge::Renderer::RenderTextureRegion(const Texture2D& texture, const SDL_FRect& srcRect, float x, float y, float w, float h) const
 {
-	const glm::vec2 offset{ m_ActiveCamera ? m_ActiveCamera->GetRenderOffset() : glm::vec2{ 0,0 } };
-	SDL_FRect dst{
-		(x + offset.x) * m_RenderScale.first,
-		(y + offset.y) * m_RenderScale.second,
-		w * m_RenderScale.first,
-		h * m_RenderScale.second
-	};
+	const SDL_FRect dst{ WorldRectToScreen(x, y, w, h) };
 	SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), &srcRect, &dst);
 }
 
@@ -192,4 +169,29 @@ void ge::Renderer::RestoreCamera()
 {
 	m_ActiveCamera = m_SuspendedCamera;
 	m_SuspendedCamera = nullptr;
+}
+
+glm::vec2 ge::Renderer::WorldToScreen(const glm::vec2& world) const
+{
+	const glm::vec2 view{ m_ActiveCamera ? m_ActiveCamera->WorldToView(world) : world };
+	return { view.x * m_RenderScale.first, view.y * m_RenderScale.second };
+}
+
+glm::vec2 ge::Renderer::ScreenToWorld(const glm::vec2& screen) const
+{
+	const glm::vec2 view{ screen.x / m_RenderScale.first, screen.y / m_RenderScale.second };
+	return m_ActiveCamera ? m_ActiveCamera->ViewToWorld(view) : view;
+}
+
+float ge::Renderer::WorldLengthToScreen(float length) const
+{
+	const float zoom{ m_ActiveCamera ? m_ActiveCamera->GetZoom() : 1.f };
+	return length * zoom * m_RenderScale.first;
+}
+
+SDL_FRect ge::Renderer::WorldRectToScreen(float x, float y, float w, float h) const
+{
+	const float zoom{ m_ActiveCamera ? m_ActiveCamera->GetZoom() : 1.f };
+	const glm::vec2 screenPos{ WorldToScreen({ x, y }) };
+	return { screenPos.x, screenPos.y, w * zoom * m_RenderScale.first, h * zoom * m_RenderScale.second };
 }

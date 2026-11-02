@@ -36,6 +36,8 @@ namespace ge
 
 		int GetControllerCount() const noexcept;
 
+		float GetMouseWheelDelta() const noexcept;
+
 		// Input Trigger should live here
 		enum class InputTrigger
 		{
