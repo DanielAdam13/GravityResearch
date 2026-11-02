@@ -17,7 +17,7 @@ namespace gravity
 		BaseModel()
 		{}
 
-		virtual State Rk4Step(const State& /*s*/, double /*h*/) const { return {}; }
+		virtual State Rk4Step(const State& s, double h) const = 0;
 
 	protected:
 

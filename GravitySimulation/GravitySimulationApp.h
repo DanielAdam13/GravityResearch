@@ -9,7 +9,7 @@ namespace ge
     class Scene;
 }
 
-namespace customProject
+namespace gravity
 {
     class GravitySimulationApp final : public ge::IGameApplication
     {

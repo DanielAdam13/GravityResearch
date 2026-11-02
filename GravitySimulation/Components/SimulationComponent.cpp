@@ -1,8 +1,14 @@
 #include "SimulationComponent.h"
 #include "GameObject.h"
 
-gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner)
-	:ge::Component::Component(owner)
+#include <utility>
+
+gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model, const State& initialState, double timeIntervalH)
+	:ge::Component::Component(owner),
+	m_Model{ std::move(model) },
+	m_CurrentState{ initialState },
+	m_InitialState{ initialState },
+	m_H{ timeIntervalH }
 {
 }
 
@@ -20,7 +26,7 @@ void gravity::SimulationComponent::FixedUpdateComponent(float engineDT)
 	int steps{ 0 };
 	while (m_Accumulator >= m_H && steps < m_MaxSubsteps)
 	{
-		m_CurrentState = m_Model.Rk4Step(m_CurrentState, m_H);
+		m_CurrentState = m_Model->Rk4Step(m_CurrentState, m_H);
 		++m_StepCount; // time = count * h
 		m_Accumulator -= m_H;
 		++steps;

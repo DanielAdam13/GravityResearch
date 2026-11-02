@@ -7,6 +7,7 @@
 #include "Components/TextComponent.h"
 #include "Components/CameraZoomComponent.h"
 #include "Components/Image.h"
+#include "Components/SimulationComponent.h"
 
 #include "Font.h"
 #include "Texture2D.h"
@@ -17,10 +18,12 @@
 #include "Services/InputManager.h"
 #include "Commands/ChangeWindowSizeCommand.h"
 
+#include "PhysicsCore.h"
+
 #include <memory>
 #include <utility>
 
-void customProject::GravitySimulationApp::Load()
+void gravity::GravitySimulationApp::Load()
 {
 	ge::Renderer::GetInstance().SetWindowSize({ 800, 800 });
 
@@ -33,6 +36,10 @@ void customProject::GravitySimulationApp::Load()
 	auto satelliteObject{ std::make_unique<ge::GameObject>("SatelliteGO") };
 	satelliteObject->AddComponent<ge::Image>(satelliteObject.get())->SetTexture(satelliteTexture);
 	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
+	satelliteObject->AddComponent<SimulationComponent>(satelliteObject.get(), 
+		std::make_unique<TwoBody>(1),
+		State({ 1, 0 }, { 0, 1 }),
+		0.0001);
 
 	scene.Add(std::move(satelliteObject));
 
@@ -43,15 +50,15 @@ void customProject::GravitySimulationApp::Load()
 	BindInputCommands();
 }
 
-void customProject::GravitySimulationApp::Update(float)
+void gravity::GravitySimulationApp::Update(float)
 {
 }
 
-void customProject::GravitySimulationApp::FixedUpdate(float)
+void gravity::GravitySimulationApp::FixedUpdate(float)
 {
 }
 
-void customProject::GravitySimulationApp::BindInputCommands()
+void gravity::GravitySimulationApp::BindInputCommands()
 {
 	auto& input{ ge::ServiceLocator::GetInputManager() };
 
@@ -61,7 +68,7 @@ void customProject::GravitySimulationApp::BindInputCommands()
 		std::make_unique<ge::ChangeWindowSizeCommand>(1200, 1200));
 }
 
-void customProject::GravitySimulationApp::SetupDefaultCamera(ge::Scene& scene)
+void gravity::GravitySimulationApp::SetupDefaultCamera(ge::Scene& scene)
 {
 	m_DefaultCamera = std::make_unique<ge::Camera>(glm::vec2{
 		static_cast<float>(ge::Renderer::GetInstance().GetWindowDesignSize().first),

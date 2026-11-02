@@ -21,7 +21,7 @@ int main(int, char* [])
 
     ge::GameEngine::GetInstance().InitializeEngine(data_location, "Gravity Simulation");
 
-    customProject::GravitySimulationApp app{};
+    gravity::GravitySimulationApp app{};
     ge::GameEngine::GetInstance().Run(app);
     return 0;
 }
