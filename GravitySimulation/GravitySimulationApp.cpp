@@ -34,14 +34,26 @@ void gravity::GravitySimulationApp::Load()
 	// 2. GO Creation
 	ge::Texture2D* satelliteTexture{ ge::ResourceManager::GetInstance().LoadTexture("satellite.png") };
 	auto satelliteObject{ std::make_unique<ge::GameObject>("SatelliteGO") };
-	satelliteObject->AddComponent<ge::Image>(satelliteObject.get())->SetTexture(satelliteTexture);
+	auto* imageCompS{ satelliteObject->AddComponent<ge::Image>(satelliteObject.get()) };
+	imageCompS->SetTexture(satelliteTexture);
+	imageCompS->SetAnchor({ 0.5f, 0.5f });
 	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
 	satelliteObject->AddComponent<SimulationComponent>(satelliteObject.get(), 
-		std::make_unique<TwoBody>(1),
-		State({ 1, 0 }, { 0, 1 }),
+		std::make_unique<TwoBody>(7),
+		State({ 5, 0 }, { 0, 1 }),
 		0.0001);
 
 	scene.Add(std::move(satelliteObject));
+
+	// Earth
+	ge::Texture2D* earthTexture{ ge::ResourceManager::GetInstance().LoadTexture("earth.png") };
+	auto earthObject{ std::make_unique<ge::GameObject>("SatelliteGO") };
+	auto* imageCompE{ earthObject->AddComponent<ge::Image>(earthObject.get()) };
+	imageCompE->SetTexture(earthTexture);
+	imageCompE->SetAnchor({ 0.5f, 0.5f });
+	earthObject->GetComponent<ge::Transform>()->SetLocalScale(1.f, 1.f, 1.f);
+
+	scene.Add(std::move(earthObject));
 
 	// 3. Default Camera Setup
 	SetupDefaultCamera(scene);
