@@ -8,7 +8,8 @@ gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, std::un
 	m_Model{ std::move(model) },
 	m_CurrentState{ initialState },
 	m_InitialState{ initialState },
-	m_H{ timeIntervalH }
+	m_H{ timeIntervalH },
+	m_TimeScale{ m_H * 60 }
 {
 }
 

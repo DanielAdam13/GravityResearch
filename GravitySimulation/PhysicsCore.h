@@ -8,7 +8,8 @@ namespace gravity
 {
 	struct State 
 	{ 
-		glm::dvec2 position; glm::dvec2 velocity;
+		glm::dvec2 position; 
+		glm::dvec2 velocity;
 	};
 
 	class BaseModel

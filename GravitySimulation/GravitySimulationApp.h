@@ -31,5 +31,7 @@ namespace gravity
 
         std::unique_ptr<ge::Camera> m_DefaultCamera; // Owned
         void SetupDefaultCamera(ge::Scene& scene);
+
+        static constexpr int SimulationSteps{ 1024 };
     };
 }

@@ -19,6 +19,8 @@
 #include "Commands/ChangeWindowSizeCommand.h"
 
 #include "PhysicsCore.h"
+#include "SimulationHUDImGui.h"
+#include "PhysicsHelpers.h"
 
 #include <memory>
 #include <utility>
@@ -38,10 +40,16 @@ void gravity::GravitySimulationApp::Load()
 	imageCompS->SetTexture(satelliteTexture);
 	imageCompS->SetAnchor({ 0.5f, 0.5f });
 	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
+
+	constexpr double mu{ 5.0 };
+	const State initialState{ { 5.0, 0.0 }, { 0.0, 1.0 } };
+	const double T{ helpers::OrbitPeriod(
+		helpers::SemiMajorAxis({initialState.position, initialState.velocity}, mu), mu) };
+	const double h{ T / SimulationSteps };
 	satelliteObject->AddComponent<SimulationComponent>(satelliteObject.get(), 
-		std::make_unique<TwoBody>(7),
-		State({ 5, 0 }, { 0, 1 }),
-		0.0001);
+		std::make_unique<TwoBody>(mu),
+		initialState,
+		h);
 
 	scene.Add(std::move(satelliteObject));
 
@@ -58,7 +66,10 @@ void gravity::GravitySimulationApp::Load()
 	// 3. Default Camera Setup
 	SetupDefaultCamera(scene);
 
-	// 4. Bind commands
+	// 4. ImGui control panel.
+	scene.AddImGuiScene(std::make_unique<SimulationHUDImGui>(this));
+
+	// 5. Bind commands
 	BindInputCommands();
 }
 

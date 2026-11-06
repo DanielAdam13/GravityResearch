@@ -36,7 +36,7 @@ namespace gravity
 
 		const double m_H; // Constant time interval
 		static constexpr uint64_t m_MaxSubsteps{ 1000 };
-		double m_TimeScale{ 1.0 }; // Non-const so can be changed from ImGui
+		const double m_TimeScale; // Smoother frames for visual simulation - DOES NOT AFFECT PHYSICS, only UpdateComponent's position setting
 		double m_Accumulator{ 0.0 };
 		uint64_t m_StepCount{ 0 };
 
