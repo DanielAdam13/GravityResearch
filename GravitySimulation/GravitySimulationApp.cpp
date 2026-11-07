@@ -59,7 +59,7 @@ void gravity::GravitySimulationApp::Load()
 	imageCompE->SetAnchor({ 0.5f, 0.5f });
 	earthObject->GetComponent<ge::Transform>()->SetLocalScale(1.f, 1.f, 1.f);
 
-	const State initialEarthState{ { 6.0, 0.0 }, { 0.0, 0.0 } };
+	const State initialEarthState{ { 0.0, 0.0 }, { 0.0, 0.0 } };
 	const BodyData earthData{ "Earth", 2.0, 0.0 };
 	auto* bodyCompE{ earthObject->AddComponent<CelestialBodyComponent>(earthObject.get(), earthData, initialEarthState) };
 
