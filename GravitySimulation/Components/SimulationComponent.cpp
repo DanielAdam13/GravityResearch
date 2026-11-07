@@ -1,33 +1,28 @@
 #include "SimulationComponent.h"
 #include "GameObject.h"
 
-#include <utility>
+#include "Components/CelestialBodyComponent.h"
 
-gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model, const State& initialState, double timeIntervalH)
+#include <memory>
+
+gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, CelestialBodyComponent* central, CelestialBodyComponent* orbiter,
+	double timeIntervalH)
 	:ge::Component::Component(owner),
-	m_Model{ std::move(model) },
-	m_CurrentState{ initialState },
-	m_InitialState{ initialState },
+	m_Model{ std::make_unique<TwoBody>(central->GetBodyData().mu, central->GetCurrentState().position) },
+	m_Central{ central },
+	m_Orbiter{ orbiter },
 	m_H{ timeIntervalH },
 	m_TimeScale{ m_H * 60 }
 {
 }
 
-void gravity::SimulationComponent::UpdateComponent(float /*engineDT*/)
-{
-	GetOwner()->GetComponent<ge::Transform>()->SetLocalPosition(
-		static_cast<float>(m_CurrentState.position.x * WorldPerSimUnit),
-		static_cast<float>(-m_CurrentState.position.y * WorldPerSimUnit) // Invert SDL's y down axis
-	);
-}
-
 void gravity::SimulationComponent::FixedUpdateComponent(float engineDT)
 {
 	m_Accumulator += m_TimeScale * static_cast<double>(engineDT); // Simulation units per real second
-	int steps{ 0 };
+	uint64_t steps{ 0 };
 	while (m_Accumulator >= m_H && steps < m_MaxSubsteps)
 	{
-		m_CurrentState = m_Model->Rk4Step(m_CurrentState, m_H);
+		m_Orbiter->SetState(m_Model->Rk4Step(m_Orbiter->GetCurrentState(), m_H));
 		++m_StepCount; // time = count * h
 		m_Accumulator -= m_H;
 		++steps;
@@ -37,4 +32,12 @@ void gravity::SimulationComponent::FixedUpdateComponent(float engineDT)
 	{
 		m_Accumulator = 0.0; // reset accumulator, avoid a runaway loop
 	}
+}
+
+void gravity::SimulationComponent::Reset()
+{
+	m_Central->Reset();
+	m_Orbiter->Reset();
+	m_Accumulator = 0.0;
+	m_StepCount = 0;
 }

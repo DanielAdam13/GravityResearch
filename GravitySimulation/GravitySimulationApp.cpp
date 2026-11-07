@@ -7,7 +7,9 @@
 #include "Components/TextComponent.h"
 #include "Components/CameraZoomComponent.h"
 #include "Components/Image.h"
+
 #include "Components/SimulationComponent.h"
+#include "Components/CelestialBodyComponent.h"
 
 #include "Font.h"
 #include "Texture2D.h"
@@ -33,7 +35,9 @@ void gravity::GravitySimulationApp::Load()
 	ge::Scene& scene{ ge::SceneManager::GetInstance().CreateScene("MainScene") };
 	ge::SceneManager::GetInstance().SwitchToSceneWithName("MainScene");
 
-	// 2. GO Creation
+	// 2. Game Object Creation
+
+	// Satellite
 	ge::Texture2D* satelliteTexture{ ge::ResourceManager::GetInstance().LoadTexture("satellite.png") };
 	auto satelliteObject{ std::make_unique<ge::GameObject>("SatelliteGO") };
 	auto* imageCompS{ satelliteObject->AddComponent<ge::Image>(satelliteObject.get()) };
@@ -41,27 +45,37 @@ void gravity::GravitySimulationApp::Load()
 	imageCompS->SetAnchor({ 0.5f, 0.5f });
 	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
 
-	constexpr double mu{ 2.0 };
-	const State initialState{ { 3.0, 0.0 }, { 0.0, 1.0 } };
-	const double T{ helpers::OrbitPeriod(
-		helpers::SemiMajorAxis({initialState.position, initialState.velocity}, mu), mu) };
-	const double h{ T / SimulationSteps };
-	satelliteObject->AddComponent<SimulationComponent>(satelliteObject.get(), 
-		std::make_unique<TwoBody>(mu),
-		initialState,
-		h);
+	const State initialSatState{ { 3.0, 0.0 }, { 0.0, 1.0 } };
+	const BodyData satelliteData{ "Satellite", 0.0, 0.0 };
+	auto* bodyCompS{ satelliteObject->AddComponent<CelestialBodyComponent>(satelliteObject.get(), satelliteData, initialSatState) };
 
 	scene.Add(std::move(satelliteObject));
-
-	// Earth
+	
+	// Earth - central body
 	ge::Texture2D* earthTexture{ ge::ResourceManager::GetInstance().LoadTexture("earth.png") };
-	auto earthObject{ std::make_unique<ge::GameObject>("SatelliteGO") };
+	auto earthObject{ std::make_unique<ge::GameObject>("EarthGO") };
 	auto* imageCompE{ earthObject->AddComponent<ge::Image>(earthObject.get()) };
 	imageCompE->SetTexture(earthTexture);
 	imageCompE->SetAnchor({ 0.5f, 0.5f });
 	earthObject->GetComponent<ge::Transform>()->SetLocalScale(1.f, 1.f, 1.f);
 
+	const State initialEarthState{ { 6.0, 0.0 }, { 0.0, 0.0 } };
+	const BodyData earthData{ "Earth", 2.0, 0.0 };
+	auto* bodyCompE{ earthObject->AddComponent<CelestialBodyComponent>(earthObject.get(), earthData, initialEarthState) };
+
 	scene.Add(std::move(earthObject));
+
+	// Simulation GO
+	auto simultionObject{ std::make_unique<ge::GameObject>("SimulationGO") };
+	const double T{ helpers::OrbitPeriod(
+		helpers::SemiMajorAxis({initialSatState.position, initialSatState.velocity}, earthData.mu), earthData.mu) };
+	const double h{ T / SimulationSteps };
+	simultionObject->AddComponent<SimulationComponent>(simultionObject.get(),
+		bodyCompE, bodyCompS,
+		h);
+
+	scene.Add(std::move(simultionObject));
+	
 
 	// 3. Default Camera Setup
 	SetupDefaultCamera(scene);
@@ -97,6 +111,8 @@ void gravity::GravitySimulationApp::SetupDefaultCamera(ge::Scene& scene)
 		static_cast<float>(ge::Renderer::GetInstance().GetWindowDesignSize().first),
 		static_cast<float>(ge::Renderer::GetInstance().GetWindowDesignSize().second) });
 	m_DefaultCamera->SetPosition({ 0.f, 0.f });
+
+	m_DefaultCamera->SetZoom(0.2f);
 
 	ge::Renderer::GetInstance().SetActiveCamera(m_DefaultCamera.get());
 

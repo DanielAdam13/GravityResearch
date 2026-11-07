@@ -12,34 +12,42 @@ namespace ge
 
 namespace gravity
 {
-	// OWNS the current state of the set MODEL and sets local position
+	class CelestialBodyComponent;
+
+	/*
+	* Progresses the accumulation of the simulation.
+	* Creates and Owns the model - TwoBody or PCR3BP.
+	*/
 	class SimulationComponent final : public ge::Component
 	{
 	public:
 		// ---- TYPE IDENTIFIER ----
-		// Every Anomator Instance shares the same component type ID
+		// Every Simulation Component Instance shares the same component type ID
 		static constexpr ge::ComponentTypeID StaticTypeID{ 0 };
 
-		SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model, const State& initialState, double timeIntervalH = 0.0001);
+		SimulationComponent(ge::GameObject* owner, CelestialBodyComponent* central, CelestialBodyComponent* orbiter,
+			double timeIntervalH = 0.0001);
 
-		// Used only for rendering purposes for Transform double -> float conversion
-		virtual void UpdateComponent(float deltaTime) override;
+		virtual void UpdateComponent(float) override {}
 		// Physics-based time intervals
 		virtual void FixedUpdateComponent(float engineDT) override;
 		virtual void RenderComponent() const override {}
 
+		void Reset();
+
 	private:
 		std::unique_ptr<BaseModel> m_Model;
 
-		State m_CurrentState;
-		const State m_InitialState; // To reset to from ImGui
+		CelestialBodyComponent* m_Central;
+		CelestialBodyComponent* m_Orbiter;
 
+		// Accumulation variables
+		// ----------------------------------
 		const double m_H; // Constant time interval
 		static constexpr uint64_t m_MaxSubsteps{ 1000 };
-		const double m_TimeScale; // Smoother frames for visual simulation - DOES NOT AFFECT PHYSICS, only UpdateComponent's position setting
+		const double m_TimeScale; // Smoother frames for visual simulation - How many steps per real second?, only UpdateComponent's position setting
 		double m_Accumulator{ 0.0 };
 		uint64_t m_StepCount{ 0 };
-
-		static constexpr double WorldPerSimUnit{ 200.0 };  // 1 normalized distance = 200 world units at zoom 1
+		// ----------------------------------
 	};
 }
