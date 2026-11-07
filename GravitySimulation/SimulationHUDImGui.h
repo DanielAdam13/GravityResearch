@@ -20,8 +20,8 @@ namespace gravity
 	private:
 		GravitySimulationApp* m_App; // Cached ref
 
-		double m_TestMu{ 1.0 };
-		double m_TestRadius{ 1.0 };
+		float m_TestMu{ 1.f };
+		float m_TestRadius{ 1.f };
 		std::vector<ConvergenceRow> m_Rows;
 	};
 }

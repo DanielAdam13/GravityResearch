@@ -8,12 +8,12 @@ namespace gravity
     {
         int stepsPerOrbit;
         int orbits;
-        double radiusError;
-        double positionError;
-        double energyDrift;
+        float radiusError;
+        float positionError;
+        float energyDrift;
     };
 
     // Ran once when ImGui button is pressed
-    std::vector<ConvergenceRow> RunStepConvergence(double mu, double radius,
+    std::vector<ConvergenceRow> RunStepConvergence(float mu, float radius,
         const std::vector<int>& stepCounts, const std::vector<int>& orbitCounts);
 }

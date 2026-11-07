@@ -22,13 +22,13 @@ void gravity::SimulationHUDImGui::RenderImGui()
 	ImGui::TextUnformatted("Integrator test: steps per orbit (RK4, circular two-body orbit)");
 	ImGui::Separator();
 
-	ImGui::InputDouble("mu", &m_TestMu, 0.0, 0.0, "%.4f");
-	ImGui::InputDouble("radius", &m_TestRadius, 0.0, 0.0, "%.4f");
+	ImGui::InputFloat("mu", &m_TestMu, 0.f, 0.f, "%.4f");
+	ImGui::InputFloat("radius", &m_TestRadius, 0.f, 0.f, "%.4f");
 
 	// Only on the button press
-	if (ImGui::Button("Run test") && m_TestMu > 0.0 && m_TestRadius > 0.0)
+	if (ImGui::Button("Run test") && m_TestMu > 0.f && m_TestRadius > 0.f)
 	{
-		m_Rows = gravity::RunStepConvergence(m_TestMu, m_TestRadius, { 16, 32, 64, 128, 256 }, { 1, 10, 100 });
+		m_Rows = gravity::RunStepConvergence(m_TestMu, m_TestRadius, { 16, 32, 64, 128, 256, 512, 1024 }, { 1, 10, 100 });
 	}
 
 	if (!m_Rows.empty())

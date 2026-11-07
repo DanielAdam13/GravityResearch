@@ -3,7 +3,7 @@
 
 #include <utility>
 
-gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model, const State& initialState, double timeIntervalH)
+gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model, const State& initialState, float timeIntervalH)
 	:ge::Component::Component(owner),
 	m_Model{ std::move(model) },
 	m_CurrentState{ initialState },
@@ -23,7 +23,7 @@ void gravity::SimulationComponent::UpdateComponent(float /*engineDT*/)
 
 void gravity::SimulationComponent::FixedUpdateComponent(float engineDT)
 {
-	m_Accumulator += m_TimeScale * static_cast<double>(engineDT); // Simulation units per real second
+	m_Accumulator += m_TimeScale * static_cast<float>(engineDT); // Simulation units per real second
 	int steps{ 0 };
 	while (m_Accumulator >= m_H && steps < m_MaxSubsteps)
 	{
@@ -35,6 +35,6 @@ void gravity::SimulationComponent::FixedUpdateComponent(float engineDT)
 
 	if (steps == m_MaxSubsteps)
 	{
-		m_Accumulator = 0.0; // reset accumulator, avoid a runaway loop
+		m_Accumulator = 0.f; // reset accumulator, avoid a runaway loop
 	}
 }

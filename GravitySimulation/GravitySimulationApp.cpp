@@ -41,11 +41,11 @@ void gravity::GravitySimulationApp::Load()
 	imageCompS->SetAnchor({ 0.5f, 0.5f });
 	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
 
-	constexpr double mu{ 5.0 };
-	const State initialState{ { 5.0, 0.0 }, { 0.0, 1.0 } };
-	const double T{ helpers::OrbitPeriod(
+	constexpr float mu{ 5.f };
+	const State initialState{ { 5.f, 0.f }, { 0.f, 1.f } };
+	const float T{ helpers::OrbitPeriod(
 		helpers::SemiMajorAxis({initialState.position, initialState.velocity}, mu), mu) };
-	const double h{ T / SimulationSteps };
+	const float h{ T / SimulationSteps };
 	satelliteObject->AddComponent<SimulationComponent>(satelliteObject.get(), 
 		std::make_unique<TwoBody>(mu),
 		initialState,
