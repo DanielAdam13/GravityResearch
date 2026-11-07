@@ -28,7 +28,7 @@ void gravity::SimulationHUDImGui::RenderImGui()
 	// Only on the button press
 	if (ImGui::Button("Run test") && m_TestMu > 0.0 && m_TestRadius > 0.0)
 	{
-		m_Rows = gravity::RunStepConvergence(m_TestMu, m_TestRadius, { 16, 32, 64, 128, 256 }, { 1, 10, 100 });
+		m_Rows = gravity::RunStepConvergence(m_TestMu, m_TestRadius, { 16, 32, 64, 128, 256, 512, 1024 }, { 1, 10, 100 });
 	}
 
 	if (!m_Rows.empty())
