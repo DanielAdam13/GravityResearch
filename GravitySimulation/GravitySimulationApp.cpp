@@ -10,6 +10,7 @@
 
 #include "Components/SimulationComponent.h"
 #include "Components/CelestialBodyComponent.h"
+#include "Components/TrailComponent.h"
 
 #include "Font.h"
 #include "Texture2D.h"
@@ -44,6 +45,7 @@ void gravity::GravitySimulationApp::Load()
 	imageCompS->SetTexture(satelliteTexture);
 	imageCompS->SetAnchor({ 0.5f, 0.5f });
 	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
+	satelliteObject->AddComponent<TrailComponent>(satelliteObject.get(), 5000, 0.02, SDL_Color{ 255, 200, 0, 255 });
 
 	const State initialSatState{ { 3.0, 0.0 }, { 0.0, 1.0 } };
 	const BodyData satelliteData{ "Satellite", 0.0, 0.0 };
