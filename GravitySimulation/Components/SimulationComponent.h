@@ -25,7 +25,7 @@ namespace gravity
 		// Every Simulation Component Instance shares the same component type ID
 		static constexpr ge::ComponentTypeID StaticTypeID{ 0 };
 
-		SimulationComponent(ge::GameObject* owner, CelestialBodyComponent* central, CelestialBodyComponent* orbiter,
+		SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model,/* CelestialBodyComponent* central,*/ CelestialBodyComponent* orbiter,
 			double timeIntervalH = 0.0001);
 
 		virtual void UpdateComponent(float) override {}
@@ -38,7 +38,7 @@ namespace gravity
 	private:
 		std::unique_ptr<BaseModel> m_Model;
 
-		CelestialBodyComponent* m_Central;
+		//CelestialBodyComponent* m_Central;
 		CelestialBodyComponent* m_Orbiter;
 
 		// Accumulation variables

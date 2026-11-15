@@ -24,9 +24,11 @@
 #include "PhysicsCore.h"
 #include "SimulationHUDImGui.h"
 #include "PhysicsHelpers.h"
+#include "SimulationConstants.h"
 
 #include <memory>
 #include <utility>
+#include <numbers>
 
 void gravity::GravitySimulationApp::Load()
 {
@@ -38,20 +40,9 @@ void gravity::GravitySimulationApp::Load()
 
 	// 2. Game Object Creation
 
-	// Satellite
-	ge::Texture2D* satelliteTexture{ ge::ResourceManager::GetInstance().LoadTexture("satellite.png") };
-	auto satelliteObject{ std::make_unique<ge::GameObject>("SatelliteGO") };
-	auto* imageCompS{ satelliteObject->AddComponent<ge::Image>(satelliteObject.get()) };
-	imageCompS->SetTexture(satelliteTexture);
-	imageCompS->SetAnchor({ 0.5f, 0.5f });
-	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
-	satelliteObject->AddComponent<TrailComponent>(satelliteObject.get(), 5000, 0.02, SDL_Color{ 255, 200, 0, 255 });
-
-	const State initialSatState{ { 3.0, 0.0 }, { 0.0, 1.0 } };
-	const BodyData satelliteData{ "Satellite", 0.0, 0.0 };
-	auto* bodyCompS{ satelliteObject->AddComponent<CelestialBodyComponent>(satelliteObject.get(), satelliteData, initialSatState) };
-
-	scene.Add(std::move(satelliteObject));
+	const BodyData earthData{ "Earth", constants::EarthMu, constants::EarthRadiusKm };
+	const BodyData moonData{ "Moon", constants::MoonMu, constants::MoonRadiusKm };
+	const double massRatio{ moonData.mu / (earthData.mu + moonData.mu) };
 	
 	// Earth - central body
 	ge::Texture2D* earthTexture{ ge::ResourceManager::GetInstance().LoadTexture("earth.png") };
@@ -61,20 +52,49 @@ void gravity::GravitySimulationApp::Load()
 	imageCompE->SetAnchor({ 0.5f, 0.5f });
 	earthObject->GetComponent<ge::Transform>()->SetLocalScale(1.f, 1.f, 1.f);
 
-	const State initialEarthState{ { 0.0, 0.0 }, { 0.0, 0.0 } };
-	const BodyData earthData{ "Earth", 2.0, 0.0 };
-	auto* bodyCompE{ earthObject->AddComponent<CelestialBodyComponent>(earthObject.get(), earthData, initialEarthState) };
+	const State initialEarthState{ { -massRatio, 0.0 }, { 0.0, 0.0 } };
+	earthObject->AddComponent<CelestialBodyComponent>(earthObject.get(), earthData, initialEarthState);
 
 	scene.Add(std::move(earthObject));
 
+	// Moon - body
+	ge::Texture2D* moonTexture{ ge::ResourceManager::GetInstance().LoadTexture("Moon.png") };
+	auto moonObject{ std::make_unique<ge::GameObject>("MoonGO") };
+	auto* imageCompM{ moonObject->AddComponent<ge::Image>(moonObject.get()) };
+	imageCompM->SetTexture(moonTexture);
+	imageCompM->SetAnchor({ 0.5f, 0.5f });
+	moonObject->GetComponent<ge::Transform>()->SetLocalScale(10.f, 10.f, 10.f);
+
+	const State initialMoonState{ { (1 - massRatio), 0.0}, {0.0, 0.0} };
+	moonObject->AddComponent<CelestialBodyComponent>(moonObject.get(), moonData, initialMoonState);
+
+	scene.Add(std::move(moonObject));
+
+	// Satellite
+	ge::Texture2D* satelliteTexture{ ge::ResourceManager::GetInstance().LoadTexture("satellite.png") };
+	auto satelliteObject{ std::make_unique<ge::GameObject>("SatelliteGO") };
+	auto* imageCompS{ satelliteObject->AddComponent<ge::Image>(satelliteObject.get()) };
+	imageCompS->SetTexture(satelliteTexture);
+	imageCompS->SetAnchor({ 0.5f, 0.5f });
+	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
+	satelliteObject->AddComponent<TrailComponent>(satelliteObject.get(), 5000, 0.02, SDL_Color{ 255, 200, 0, 255 });
+
+	const State initialSatState{ { 3.0, 0.0 }, { 0.0, 0.0 } };
+	const BodyData satelliteData{ "Satellite", 0.0, 0.0 };
+	auto* bodyCompS{ satelliteObject->AddComponent<CelestialBodyComponent>(satelliteObject.get(), satelliteData, initialSatState) };
+
+	scene.Add(std::move(satelliteObject));
+
 	// Simulation GO
 	auto simultionObject{ std::make_unique<ge::GameObject>("SimulationGO") };
-	const double T{ helpers::OrbitPeriod(
+	/*const double T{ helpers::OrbitPeriod(
 		helpers::SemiMajorAxis({initialSatState.position, initialSatState.velocity}, earthData.mu), earthData.mu) };
-	const double h{ T / SimulationSteps };
+	const double htWO{ T / constants::SimulationSteps };*/
+	const double hPcr3bp{ 2 * std::numbers::pi / constants::StepsPerPrimaryPeriod };
+
 	simultionObject->AddComponent<SimulationComponent>(simultionObject.get(),
-		bodyCompE, bodyCompS,
-		h);
+		std::make_unique<Pcr3bp>(massRatio), bodyCompS,
+		hPcr3bp);
 
 	scene.Add(std::move(simultionObject));
 	
