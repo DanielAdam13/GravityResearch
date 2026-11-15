@@ -40,8 +40,8 @@ void gravity::GravitySimulationApp::Load()
 
 	// 2. Game Object Creation
 
-	const BodyData earthData{ "Earth", constants::EarthMu, constants::EarthRadiusKm };
-	const BodyData moonData{ "Moon", constants::MoonMu, constants::MoonRadiusKm };
+	const BodyData earthData{ "Earth", constants::EarthMu, constants::EarthRadiusKm / constants::EarthMoonDistanceKm };
+	const BodyData moonData{ "Moon", constants::MoonMu, constants::MoonRadiusKm / constants::EarthMoonDistanceKm };
 	const double massRatio{ moonData.mu / (earthData.mu + moonData.mu) };
 	
 	// Earth - central body
@@ -53,7 +53,8 @@ void gravity::GravitySimulationApp::Load()
 	earthObject->GetComponent<ge::Transform>()->SetLocalScale(1.f, 1.f, 1.f);
 
 	const State initialEarthState{ { -massRatio, 0.0 }, { 0.0, 0.0 } };
-	earthObject->AddComponent<CelestialBodyComponent>(earthObject.get(), earthData, initialEarthState);
+	earthObject->AddComponent<CelestialBodyComponent>(earthObject.get(), earthData, initialEarthState)->
+		FitSpriteToRadius(constants::BodyDisplayExaggeration, constants::MinBodyDiameterWorld);
 
 	scene.Add(std::move(earthObject));
 
@@ -63,10 +64,10 @@ void gravity::GravitySimulationApp::Load()
 	auto* imageCompM{ moonObject->AddComponent<ge::Image>(moonObject.get()) };
 	imageCompM->SetTexture(moonTexture);
 	imageCompM->SetAnchor({ 0.5f, 0.5f });
-	moonObject->GetComponent<ge::Transform>()->SetLocalScale(10.f, 10.f, 10.f);
 
 	const State initialMoonState{ { (1 - massRatio), 0.0}, {0.0, 0.0} };
-	moonObject->AddComponent<CelestialBodyComponent>(moonObject.get(), moonData, initialMoonState);
+	moonObject->AddComponent<CelestialBodyComponent>(moonObject.get(), moonData, initialMoonState)->
+		FitSpriteToRadius(constants::BodyDisplayExaggeration, constants::MinBodyDiameterWorld);
 
 	scene.Add(std::move(moonObject));
 
@@ -79,9 +80,10 @@ void gravity::GravitySimulationApp::Load()
 	satelliteObject->GetComponent<ge::Transform>()->SetLocalScale(0.1f, 0.1f, 0.1f);
 	satelliteObject->AddComponent<TrailComponent>(satelliteObject.get(), 5000, 0.02, SDL_Color{ 255, 200, 0, 255 });
 
-	const State initialSatState{ { 3.0, 0.0 }, { 0.0, 0.0 } };
-	const BodyData satelliteData{ "Satellite", 0.0, 0.0 };
+	const State initialSatState{ { 1.15568, 0.0 }, { 0.0, 0.0 } };
+	const BodyData satelliteData{ "Satellite", 0.0, 0.0 }; // 0 grav paremeter since it is negligible, radius = 0 -> a point
 	auto* bodyCompS{ satelliteObject->AddComponent<CelestialBodyComponent>(satelliteObject.get(), satelliteData, initialSatState) };
+	bodyCompS->FitSpriteToRadius(constants::BodyDisplayExaggeration, constants::MinBodyDiameterWorld);
 
 	scene.Add(std::move(satelliteObject));
 

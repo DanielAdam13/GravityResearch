@@ -3,6 +3,9 @@
 #include "Components/Transform.h"
 #include "SimulationConstants.h"
 #include "Components/TrailComponent.h"
+#include "Components/Image.h"
+
+#include <algorithm>
 
 gravity::CelestialBodyComponent::CelestialBodyComponent(ge::GameObject* owner, BodyData data, const State& initialState)
 	:ge::Component::Component(owner),
@@ -26,6 +29,19 @@ void gravity::CelestialBodyComponent::Reset() noexcept
 	{
 		trail->Clear();
 	}
+}
+
+void gravity::CelestialBodyComponent::FitSpriteToRadius(double exaggeration, float minDiameterWorld)
+{
+	auto* image{ GetOwner()->GetComponent<ge::Image>() };
+	if (!image || !image->GetTexture())
+		return;
+
+	const float diamater{ std::max(
+		static_cast<float>(2.0 * m_Data.radius * constants::WorldPerSimUnit * exaggeration), minDiameterWorld) };
+	const float scale{ diamater / image->GetTexture()->GetSize().x }; // Keeps aspect ratio
+
+	GetOwner()->GetComponent<ge::Transform>()->SetLocalScale(scale, scale, 1.f);
 }
 
 void gravity::CelestialBodyComponent::SetState(const State& state) noexcept

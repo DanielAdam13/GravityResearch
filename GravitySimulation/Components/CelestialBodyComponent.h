@@ -28,6 +28,8 @@ namespace gravity
 		const State& GetCurrentState() const noexcept { return m_CurrentState; }
 		void Reset() noexcept;
 
+		void FitSpriteToRadius(double exaggeration, float minDiameterWorld);
+
 		// Called directly from the central SimulationComponent from the accumulator logic.
 		// Also calls AddPoint to the Trail if not nullptr
 		void SetState(const State& state) noexcept;
