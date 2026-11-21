@@ -41,5 +41,29 @@ namespace gravity
 
 			return 1.0 / invA;
 		}
+
+		// Conserved energy. E = v^2 / 2 - mu / r
+		inline double SpecificEnergy(const glm::dvec4& s, double mu) noexcept
+		{
+			const glm::dvec2 pos{ s.x, s.y };
+			const glm::dvec2 vel{ s.z, s.w };
+
+			return 0.5 * glm::dot(vel, vel) - mu / glm::length(pos);
+		}
+
+		// Conserved energy of a three-body system.
+		inline double Jacobi(const glm::dvec4& s, double massRatio) noexcept
+		{
+			const glm::dvec2 vel{ s.z, s.w };
+			const double posX{ s.x };
+			const double posY{ s.y };
+
+			// Specific convention
+			const double r1{ std::sqrt((posX + massRatio) * (posX + massRatio) + posY * posY) };
+			const double r2{ std::sqrt((posX + massRatio) * (posX + massRatio) + posY * posY) };
+
+			return posX * posX + posY * posY + 2.0 * (1.0 - massRatio) / r1 + 2.0 * massRatio / r2 -
+				glm::dot(vel, vel);
+		}
 	}
 }
