@@ -40,6 +40,8 @@ namespace gravity
 
 		// vx = -vc * sin(phase) + posy, vy = vc * cos(phase) - (posx + mu)
 		const glm::dvec2 vel{ relativeStart.velocity.x + pos.y, relativeStart.velocity.y - (pos.x + massRatio) };
+
+		return { pos, vel };
 	}
 
 	// Comverting a PCR3BP state to Earth-Centered coordinates
@@ -85,7 +87,7 @@ namespace gravity
 		const double hDouble{ static_cast<double>(h) }; // Real time period in physics
 
 		State<T> statePcr{ CastState<T>(Pcr3bpStart(scenario, mu)) };
-		State<T> stateTb{ CastState<T>(TwoBodyStart(scenario, mu) };
+		State<T> stateTb{ CastState<T>(TwoBodyStart(scenario, mu)) };
 
 		double maxDeviation{ 0.0 };
 		// steps?
@@ -94,7 +96,7 @@ namespace gravity
 			statePcr = pcrModel.Rk4Step(statePcr, h);
 			stateTb = tbModel.Rk4Step(stateTb, h);
 
-			const State<double> converted{ RotatingToEarthInertial(CastState<double>(statePcr), mu, i * hDouble) };
+			const State<double> converted{ RotatingToEathCentered(CastState<double>(statePcr), mu, i * hDouble) };
 			const State<double> two2{ CastState<double>(stateTb) };
 			maxDeviation = std::max(maxDeviation, glm::length(converted.position - two2.position));
 		}

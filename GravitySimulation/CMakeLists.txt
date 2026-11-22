@@ -7,11 +7,11 @@ add_executable(GravitySimulation WIN32
     "PhysicsModels.h"
     "PhysicsHelpers.h" 
     "SimulationHUDImGui.h" "SimulationHUDImGui.cpp" 
-    "IntegratorTest.h"
+    "Tests/IntegratorTest.h"
     "Components/CelestialBodyComponent.h" "Components/CelestialBodyComponent.cpp" 
     "SimulationConstants.h" 
     "Components/TrailComponent.h" "Components/TrailComponent.cpp"
-    "Scenario.h")
+    "Scenario.h" "Tests/CheckpointTest.h" "Tests/PrecisionComparisonTest.h")
 
 target_include_directories(GravitySimulation PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}

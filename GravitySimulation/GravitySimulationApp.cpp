@@ -25,6 +25,7 @@
 #include "SimulationHUDImGui.h"
 #include "PhysicsHelpers.h"
 #include "SimulationConstants.h"
+#include "Scenario.h"
 
 #include <memory>
 #include <utility>
@@ -33,7 +34,7 @@
 
 void gravity::GravitySimulationApp::Load()
 {
-	ge::Renderer::GetInstance().SetWindowSize({ 800, 800 });
+	ge::Renderer::GetInstance().SetWindowSize({ 1200, 1200 });
 
 	// 1. Scene setup - a project needs at least one scene to hold its GameObjects
 	ge::Scene& scene{ ge::SceneManager::GetInstance().CreateScene("MainScene") };
@@ -119,6 +120,11 @@ void gravity::GravitySimulationApp::Load()
 
 	// 4. ImGui control panel.
 	scene.AddImGuiScene(std::make_unique<SimulationHUDImGui>(this));
+	scene.AddImGuiScene(std::make_unique<SimulationHUDImGui2>(this));
+	scene.AddImGuiScene(std::make_unique<SimulationHUDImGui3>(this));
+
+	auto result{ MaxRelativeDeviation<float>(0.0121506, Scenario{0.1, 0.0}, 2 * std::numbers::pi, 1000) };
+	result;
 
 	// 5. Bind commands
 	BindInputCommands();
