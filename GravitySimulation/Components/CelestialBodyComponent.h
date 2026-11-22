@@ -1,7 +1,7 @@
 #pragma once
 #include "Components/Component.h"
 
-#include "PhysicsCore.h"
+#include "PhysicsModels.h"
 
 namespace gravity
 {

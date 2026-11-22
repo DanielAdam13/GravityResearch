@@ -4,7 +4,7 @@
 #include <sstream>
 #include <numbers>
 
-#include "PhysicsCore.h"
+#include "PhysicsModels.h"
 
 namespace gravity
 {

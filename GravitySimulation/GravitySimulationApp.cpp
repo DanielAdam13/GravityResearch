@@ -21,7 +21,7 @@
 #include "Services/InputManager.h"
 #include "Commands/ChangeWindowSizeCommand.h"
 
-#include "PhysicsCore.h"
+#include "PhysicsModels.h"
 #include "SimulationHUDImGui.h"
 #include "PhysicsHelpers.h"
 #include "SimulationConstants.h"

@@ -1,6 +1,6 @@
 #pragma once
 #include "Components/Component.h"
-#include "PhysicsCore.h"
+#include "PhysicsModels.h"
 
 #include <cstdint>
 #include <memory>
