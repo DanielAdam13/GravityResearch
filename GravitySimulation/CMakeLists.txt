@@ -4,10 +4,10 @@ add_executable(GravitySimulation WIN32
     GravitySimulationApp.cpp
     "Components/SimulationComponent.h"
     "Components/SimulationComponent.cpp" 
-    "PhysicsCore.h" "PhysicsCore.cpp" 
+    "PhysicsCore.h"
     "PhysicsHelpers.h" 
     "SimulationHUDImGui.h" "SimulationHUDImGui.cpp" 
-    "IntegratorTest.h" "IntegratorTest.cpp" 
+    "IntegratorTest.h"
     "Components/CelestialBodyComponent.h" "Components/CelestialBodyComponent.cpp" 
     "SimulationConstants.h" 
     "Components/TrailComponent.h" "Components/TrailComponent.cpp")

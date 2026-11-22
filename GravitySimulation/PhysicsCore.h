@@ -159,7 +159,7 @@ namespace gravity
 			const T r1sq{ dx1 * dx1 + s.y * s.y };
 			const T r2sq{ dx2 * dx2 + s.y * s.y };
 			const T r1Cubed{ r1sq * std::sqrt(r1sq) };
-			const T r2Cubed{ r1sq * std::sqrt(r2sq) };
+			const T r2Cubed{ r2sq * std::sqrt(r2sq) };
 
 			// The +x and +y are the centrifugal force
 			const T ax{ T(2) * vy + x - (T(1) - m_MassRatio) * dx1 / r1Cubed - m_MassRatio * dx2 / r2Cubed }; // 2*vy -> Coriolis effect
