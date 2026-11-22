@@ -5,11 +5,11 @@
 
 #include <memory>
 
-gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model, CelestialBodyComponent* orbiter,
+gravity::SimulationComponent::SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel<double>> model, CelestialBodyComponent* orbiter,
 	double timeIntervalH)
 	:ge::Component::Component(owner),
-	/*m_Model{std::make_unique<TwoBody>(central->GetBodyData().mu, central->GetCurrentState().position)},*/
 	m_Model{ std::move(model) },
+	m_CachedMu{ m_Model->GetMu() },
 	/*m_Central{central},*/
 	m_Orbiter{ orbiter },
 	m_H{ timeIntervalH },
@@ -35,10 +35,26 @@ void gravity::SimulationComponent::FixedUpdateComponent(float engineDT)
 	}
 }
 
+void gravity::SimulationComponent::ResetModel(std::unique_ptr<BaseModel<double>> model)
+{
+	m_Model = std::move(model);
+	Reset();
+}
+
 void gravity::SimulationComponent::Reset()
 {
 	//m_Central->Reset();
 	m_Orbiter->Reset();
 	m_Accumulator = 0.0;
 	m_StepCount = 0;
+}
+
+double gravity::SimulationComponent::GetModelConservedQuantity() const
+{
+	return m_Model->ConservedQuantity(m_Orbiter->GetCurrentState());
+}
+
+double gravity::SimulationComponent::GetModelCachedMu() const
+{
+	return m_Model->GetMu();
 }

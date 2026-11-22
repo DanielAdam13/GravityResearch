@@ -22,6 +22,7 @@ namespace gravity
 
 		double m_TestMu{ 1.0 };
 		double m_TestRadius{ 1.0 };
-		std::vector<ConvergenceRow> m_Rows;
+		std::vector<ConvergenceRow> m_DoubleRows;
+		std::vector<ConvergenceRow> m_FloatRows;
 	};
 }

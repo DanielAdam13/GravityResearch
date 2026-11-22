@@ -28,12 +28,13 @@ void gravity::SimulationHUDImGui::RenderImGui()
 	// Only on the button press
 	if (ImGui::Button("Run test") && m_TestMu > 0.0 && m_TestRadius > 0.0)
 	{
-		m_Rows = gravity::RunStepConvergence(m_TestMu, m_TestRadius, { 16, 32, 64, 128, 256, 512, 1024 }, { 1, 10, 100 });
+		m_DoubleRows = gravity::RunStepConvergence<double>(m_TestMu, m_TestRadius, { 16, 32, 64, 128, 256, 512, 1024 }, { 1, 10, 100 });
+		m_FloatRows = gravity::RunStepConvergence<float>(m_TestMu, m_TestRadius, { 16, 32, 64, 128, 256, 512, 1024 }, { 1, 10, 100 });
 	}
 
-	if (!m_Rows.empty())
+	if (!m_DoubleRows.empty() && !m_FloatRows.empty())
 	{
-		ImGui::SameLine();
+		ImGui::TextUnformatted("DOUBLE");
 
 		if (ImGui::BeginTable("convergence", 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
 		{
@@ -44,7 +45,30 @@ void gravity::SimulationHUDImGui::RenderImGui()
 			ImGui::TableSetupColumn("Energy drift");
 			ImGui::TableHeadersRow();
 
-			for (const auto& row : m_Rows)
+			for (const auto& row : m_DoubleRows)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn(); ImGui::Text("%d", row.stepsPerOrbit);
+				ImGui::TableNextColumn(); ImGui::Text("%d", row.orbits);
+				ImGui::TableNextColumn(); ImGui::Text("%.2e", row.radiusError);
+				ImGui::TableNextColumn(); ImGui::Text("%.2e", row.positionError);
+				ImGui::TableNextColumn(); ImGui::Text("%.2e", row.energyDrift);
+			}
+			ImGui::EndTable();
+		}
+
+		ImGui::TextUnformatted("FLOAT");
+
+		if (ImGui::BeginTable("convergence", 5, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+		{
+			ImGui::TableSetupColumn("Steps/orbit");
+			ImGui::TableSetupColumn("Orbits");
+			ImGui::TableSetupColumn("Radius error");
+			ImGui::TableSetupColumn("Position error");
+			ImGui::TableSetupColumn("Energy drift");
+			ImGui::TableHeadersRow();
+
+			for (const auto& row : m_FloatRows)
 			{
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn(); ImGui::Text("%d", row.stepsPerOrbit);

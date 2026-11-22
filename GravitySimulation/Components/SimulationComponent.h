@@ -25,7 +25,7 @@ namespace gravity
 		// Every Simulation Component Instance shares the same component type ID
 		static constexpr ge::ComponentTypeID StaticTypeID{ 0 };
 
-		SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel> model,/* CelestialBodyComponent* central,*/ CelestialBodyComponent* orbiter,
+		SimulationComponent(ge::GameObject* owner, std::unique_ptr<BaseModel<double>> model,/* CelestialBodyComponent* central,*/ CelestialBodyComponent* orbiter,
 			double timeIntervalH = 0.0001);
 
 		virtual void UpdateComponent(float) override {}
@@ -33,10 +33,15 @@ namespace gravity
 		virtual void FixedUpdateComponent(float engineDT) override;
 		virtual void RenderComponent() const override {}
 
+		void ResetModel(std::unique_ptr<BaseModel<double>> model);
 		void Reset();
 
+		double GetModelConservedQuantity() const;
+		double GetModelCachedMu() const;
+
 	private:
-		std::unique_ptr<BaseModel> m_Model;
+		std::unique_ptr<BaseModel<double>> m_Model;
+		double m_CachedMu;
 
 		//CelestialBodyComponent* m_Central;
 		CelestialBodyComponent* m_Orbiter;

@@ -21,8 +21,8 @@ void gravity::TrailComponent::RenderComponent() const
 	for (const glm::dvec2& p : m_Points)
 	{
 		const glm::vec2 s{ renderer.WorldToScreen({
-			static_cast<float>(p.x * constants::WorldPerSimUnit),
-			static_cast<float>(-p.y * constants::WorldPerSimUnit)}) }; // Invert y
+			static_cast<float>(p.x * simConstants::WorldPerSimUnit),
+			static_cast<float>(-p.y * simConstants::WorldPerSimUnit)}) }; // Invert y
 		m_ScreenPoints.push_back({ s.x, s.y });
 	}
 

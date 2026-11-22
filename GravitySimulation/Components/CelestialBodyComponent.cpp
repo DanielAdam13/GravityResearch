@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-gravity::CelestialBodyComponent::CelestialBodyComponent(ge::GameObject* owner, BodyData data, const State& initialState)
+gravity::CelestialBodyComponent::CelestialBodyComponent(ge::GameObject* owner, BodyData data, const State<double>& initialState)
 	:ge::Component::Component(owner),
 	m_Data{ data },
 	m_InitialState{ initialState },
@@ -18,8 +18,8 @@ gravity::CelestialBodyComponent::CelestialBodyComponent(ge::GameObject* owner, B
 void gravity::CelestialBodyComponent::UpdateComponent(float)
 {
 	GetOwner()->GetComponent<ge::Transform>()->SetLocalPosition(
-		static_cast<float>(m_CurrentState.position.x * constants::WorldPerSimUnit),
-		static_cast<float>(-m_CurrentState.position.y * constants::WorldPerSimUnit));
+		static_cast<float>(m_CurrentState.position.x * simConstants::WorldPerSimUnit),
+		static_cast<float>(-m_CurrentState.position.y * simConstants::WorldPerSimUnit));
 }
 
 void gravity::CelestialBodyComponent::Reset() noexcept
@@ -38,13 +38,13 @@ void gravity::CelestialBodyComponent::FitSpriteToRadius(double exaggeration, flo
 		return;
 
 	const float diamater{ std::max(
-		static_cast<float>(2.0 * m_Data.radius * constants::WorldPerSimUnit * exaggeration), minDiameterWorld) };
+		static_cast<float>(2.0 * m_Data.radius * simConstants::WorldPerSimUnit * exaggeration), minDiameterWorld) };
 	const float scale{ diamater / image->GetTexture()->GetSize().x }; // Keeps aspect ratio
 
 	GetOwner()->GetComponent<ge::Transform>()->SetLocalScale(scale, scale, 1.f);
 }
 
-void gravity::CelestialBodyComponent::SetState(const State& state) noexcept
+void gravity::CelestialBodyComponent::SetState(const State<double>& state) noexcept
 {
 	m_CurrentState = state;
 	if (auto* trail{ GetOwner()->GetComponent<TrailComponent>() })
